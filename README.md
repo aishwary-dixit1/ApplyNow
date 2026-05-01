@@ -109,52 +109,49 @@ npm run build
 
 This root build script installs workspace dependencies and builds the frontend.
 
-## Deploy on Render
+## Deploy on Render (Single Service)
 
-This repository is set up well for a two-service Render deployment.
+This project supports deployment as one Render Web Service where Express serves both API and frontend. This avoids separate cold starts for frontend and backend.
 
-### 1) Deploy the backend as a Web Service
+### 1) Create one Web Service
 
 - Create a new **Web Service** on Render.
 - Connect this GitHub repository.
-- Set **Root Directory** to `backend`.
-- Use these commands:
-	- Build Command: `npm ci`
-	- Start Command: `npm start`
-- Add backend environment variables:
-	- `NODE_ENV=production`
-	- `MONGO_URI=<your_mongodb_connection_string>`
-	- `JWT_SECRET=<strong_random_secret>`
-	- `GOOGLE_CLIENT_ID=<your_google_client_id>`
-	- `GOOGLE_CLIENT_SECRET=<your_google_client_secret>`
-	- `CLIENT_URL=<your_render_frontend_url>`
-	- `SERVER_URL=<your_render_backend_url>`
-
-### 2) Deploy the frontend as a Static Site
-
-- Create a new **Static Site** on Render.
-- Connect the same GitHub repository.
-- Set **Root Directory** to `frontend`.
+- Set **Root Directory** to the repo root (leave empty).
 - Use these commands:
 	- Build Command: `npm ci && npm run build`
-	- Publish Directory: `dist`
-- Add frontend environment variables:
-	- `VITE_API_URL=<your_render_backend_url>`
+	- Start Command: `npm start`
+
+### 2) Add environment variables
+
+Set these in Render:
+
+- `NODE_ENV=production`
+- `MONGO_URI=<your_mongodb_connection_string>`
+- `JWT_SECRET=<strong_random_secret>`
+- `GOOGLE_CLIENT_ID=<your_google_client_id>`
+- `GOOGLE_CLIENT_SECRET=<your_google_client_secret>`
+- `SERVER_URL=https://<your-service>.onrender.com`
+- `CLIENT_URL=https://<your-service>.onrender.com`
+
+Optional:
+
+- `VITE_API_URL` can be omitted for single-service deploys because frontend defaults to same-origin API calls.
 
 ### 3) Update Google OAuth for production
 
-In the Google Cloud Console, add your Render URLs:
+In Google Cloud Console, add:
 
 - Authorized JavaScript origins:
-	- `https://<your-frontend>.onrender.com`
+	- `https://<your-service>.onrender.com`
 - Authorized redirect URIs:
-	- `https://<your-backend>.onrender.com/api/auth/google/callback`
+	- `https://<your-service>.onrender.com/api/auth/google/callback`
 
-### 4) Final check
+### 4) Deploy and verify
 
-- Open the frontend URL.
-- Sign in with Google.
-- Confirm jobs load, can be created, edited, and deleted.
+- Open `https://<your-service>.onrender.com`
+- Sign in with Google
+- Verify jobs list/create/edit/delete and dashboard analytics
 
 ## API Summary
 
@@ -167,7 +164,7 @@ In the Google Cloud Console, add your Render URLs:
 
 ## Notes
 
-- Auth uses cookies, so frontend and backend URLs must be configured correctly for local and production environments.
+- Auth uses cookies, so `CLIENT_URL` and `SERVER_URL` must be configured correctly for local and production environments.
 - If Google login fails in production, double-check `CLIENT_URL`, `SERVER_URL`, and the Google OAuth redirect URI.
 
 ## License

@@ -8,6 +8,7 @@
     "test": "jest --runInBand"
   },
   "dependencies": {
+    "applynow": "file:..",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
@@ -23,7 +24,7 @@
   "devDependencies": {
     "jest": "^29.7.0",
     "mongodb-memory-server": "^10.1.4",
-    "nodemon": "^2.0.22"
-    ,"supertest": "^7.1.0"
+    "nodemon": "^2.0.22",
+    "supertest": "^7.1.0"
   }
 }

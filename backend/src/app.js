@@ -1,4 +1,6 @@
 const express = require('express')
+const fs = require('fs')
+const path = require('path')
 const cookieParser = require('cookie-parser')
 const helmet = require('helmet')
 const cors = require('cors')
@@ -31,6 +33,16 @@ function createApp(){
   // mount routes
   app.use('/api/auth', authRoutes)
   app.use('/api/jobs', jobRoutes)
+
+  // In production, serve the built frontend from the same service.
+  const frontendDistPath = path.resolve(__dirname, '../../frontend/dist')
+  if(fs.existsSync(frontendDistPath)){
+    app.use(express.static(frontendDistPath))
+    app.get('*', (req, res, next) => {
+      if(req.path.startsWith('/api/')) return next()
+      return res.sendFile(path.join(frontendDistPath, 'index.html'))
+    })
+  }
 
   app.use(errorHandler)
   return app
