@@ -14,7 +14,14 @@ const passport = require('passport')
 
 function createApp(){
   const app = express()
-  app.use(helmet())
+  app.use(helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        imgSrc: ["'self'", 'data:', 'https://lh3.googleusercontent.com', 'https://*.googleusercontent.com']
+      }
+    }
+  }))
   app.use(express.json())
   app.use(cookieParser())
   app.use(morgan('dev'))

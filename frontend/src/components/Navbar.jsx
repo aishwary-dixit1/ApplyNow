@@ -1,7 +1,40 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 
 const GITHUB_REPO_URL = 'https://github.com/aishwary-dixit1/ApplyNow'
+
+function UserAvatar({ user }){
+  const [imageFailed, setImageFailed] = useState(false)
+
+  useEffect(() => {
+    setImageFailed(false)
+  }, [user?.avatar])
+
+  const initials = (user?.name || user?.email || 'U')
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map(part => part[0]?.toUpperCase())
+    .join('') || 'U'
+
+  if(imageFailed || !user?.avatar){
+    return (
+      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-cyan-400 to-indigo-500 text-sm font-semibold text-white ring-2 ring-white/15">
+        {initials}
+      </div>
+    )
+  }
+
+  return (
+    <img
+      src={user.avatar}
+      alt={user.name || 'avatar'}
+      className="h-9 w-9 rounded-full ring-2 ring-white/15"
+      referrerPolicy="no-referrer"
+      onError={() => setImageFailed(true)}
+    />
+  )
+}
 
 export default function Navbar(){
   const { user, logout } = useAuth()
@@ -48,7 +81,7 @@ export default function Navbar(){
                   <div className="truncate text-sm font-medium text-slate-100">{user.name}</div>
                   <div className="truncate text-xs text-slate-400">{user.email}</div>
                 </div>
-                <img src={user.avatar} alt="avatar" className="h-9 w-9 rounded-full ring-2 ring-white/15" />
+                <UserAvatar user={user} />
               </div>
               <button onClick={logout} className="btn-secondary rounded-full px-3.5 py-2 text-sm">
                 Logout
